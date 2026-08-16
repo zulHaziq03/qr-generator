@@ -1,2 +1,4 @@
 # qr-generator
-This is my personal work for media QR generator, i build this for help everyone that want to record their work efficiently
+This is my personal work for media QR generator. 
+Click this link to start generate QR ---> https://zulhaziq03.github.io/qr-generator/
+Hidup AT!
