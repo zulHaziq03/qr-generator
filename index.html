@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Center Hardware QR Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background: #f1f5f9; margin: 0; padding: 24px; color: #0f172a; }
+    .container { max-width: 1080px; margin: 0 auto; }
+    h1 { font-size: 24px; margin-bottom: 20px; font-weight: 700; text-align: center; }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 13px; font-weight: 600; color: #475569; }
+    input {
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: monospace;
+      outline: none;
+    }
+    input:focus { border-color: #2563eb; ring: 2px solid #93c5fd; }
+    
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .qr-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+    .qr-title { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 12px; }
+    .qr-box { width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+    .qr-value {
+      font-family: monospace;
+      font-size: 14px;
+      background: #f8fafc;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      word-break: break-all;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Data Center QR Dispatcher</h1>
+  
+  <div class="form-grid">
+    <div class="field-group"><label>Dora</label><input id="in-dora" value="805123" oninput="updateAll()"></div>
+    <div class="field-group"><label>Server SN</label><input id="in-server" value="24E115584" oninput="updateAll()"></div>
+    <div class="field-group"><label>New Disk PN</label><input id="in-npn" value="ST24000NM002H" oninput="updateAll()"></div>
+    <div class="field-group"><label>New Disk SN</label><input id="in-nsn" value="WYD3JA5G" oninput="updateAll()"></div>
+    <div class="field-group"><label>Old Disk PN</label><input id="in-opn" value="ST24000NM002H" oninput="updateAll()"></div>
+    <div class="field-group"><label>Old Disk SN</label><input id="in-osn" value="WYD1LYCJ" oninput="updateAll()"></div>
+  </div>
+
+  <div class="qr-grid" id="grid"></div>
+</div>
+
+<script>
+  const fields = [
+    { id: 'in-dora', label: 'Dora' },
+    { id: 'in-server', label: 'Server SN' },
+    { id: 'in-npn', label: 'New Disk PN' },
+    { id: 'in-nsn', label: 'New Disk SN' },
+    { id: 'in-opn', label: 'Old Disk PN' },
+    { id: 'in-osn', label: 'Old Disk SN' }
+  ];
+
+  function initFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const rawVal = params.get('value');
+    if (rawVal) {
+      const parts = rawVal.split(',');
+      fields.forEach((f, idx) => {
+        if (parts[idx] !== undefined) document.getElementById(f.id).value = parts[idx].trim();
+      });
+    }
+  }
+
+  function updateAll() {
+    const container = document.getElementById('grid');
+    container.innerHTML = '';
+    
+    fields.forEach(f => {
+      const val = document.getElementById(f.id).value || '-';
+      const card = document.createElement('div');
+      card.className = 'qr-card';
+      
+      const title = document.createElement('div');
+      title.className = 'qr-title';
+      title.innerText = f.label;
+      
+      const qrDiv = document.createElement('div');
+      qrDiv.className = 'qr-box';
+      
+      const text = document.createElement('div');
+      text.className = 'qr-value';
+      text.innerText = val;
+      
+      card.appendChild(title);
+      card.appendChild(qrDiv);
+      card.appendChild(text);
+      container.appendChild(card);
+
+      if (val && val !== '-') {
+        new QRCode(qrDiv, {
+          text: val,
+          width: 200,
+          height: 200,
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+    });
+  }
+
+  initFromUrl();
+  updateAll();
+</script>
+</body>
+</html>
